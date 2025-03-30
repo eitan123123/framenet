@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="22acf242-c67f-49de-9e0a-0d70db09ace2" name="phoenix">
+        <fileTransfer rootFolder="/cs/labs/dshahaf/eitanskarim123" accessType="SFTP" host="phoenix.cs.huji.ac.il" port="22" sshConfigId="383a3d04-3664-420d-bcb7-6c5a2f47cf7b" sshConfig="eitanskarim123@phoenix.cs.huji.ac.il">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

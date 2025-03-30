@@ -1,0 +1,60 @@
+Original sentence: I open the door.
+Frame definition: an agent manipulates a fastener to open or close a containing object.
+Merged sentence: I open the door by manipulating a fastener to open a containing object.
+
+NLI Input:
+Premise: I open the door.
+Hypothesis: This is an event where I open the door by manipulating a fastener to open a containing object.
+
+MICROSOFT Model Scores:
+Entailment: 0.0013
+Neutral: 0.9969
+Contradiction: 0.0017
+
+MORITZLAURER Model Scores:
+Entailment: 0.8982
+Neutral: 0.0999
+Contradiction: 0.0019
+
+================================================================================
+
+Original sentence: I open the door.
+Frame definition: this frame contains words for motions or actions an agent performs using some part of his/her body.
+Merged sentence: I open the door using a part of my body.
+
+NLI Input:
+Premise: I open the door.
+Hypothesis: This is an event where I open the door using a part of my body.
+
+MICROSOFT Model Scores:
+Entailment: 0.0023
+Neutral: 0.3720
+Contradiction: 0.6256
+
+MORITZLAURER Model Scores:
+Entailment: 0.8675
+Neutral: 0.1310
+Contradiction: 0.0014
+
+================================================================================
+
+Original sentence: I open the door.
+Frame definition: an agent initiates the beginning of an ongoing activity in which he will be continuously involved.
+Merged sentence: I open the door, initiating the beginning of an ongoing activity in which I will be continuously involved.
+
+NLI Input:
+Premise: I open the door.
+Hypothesis: This is an event where I open the door, initiating the beginning of an ongoing activity in which I will be continuously involved.
+
+MICROSOFT Model Scores:
+Entailment: 0.0003
+Neutral: 0.9908
+Contradiction: 0.0089
+
+MORITZLAURER Model Scores:
+Entailment: 0.1893
+Neutral: 0.8073
+Contradiction: 0.0034
+
+================================================================================
+

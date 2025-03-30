@@ -1,0 +1,630 @@
+import spacy
+from nltk.corpus import framenet as fn
+from typing import Tuple, List, Dict, Optional
+import logging
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+import numpy as np
+from scipy.stats import entropy
+from collections import Counter
+import nltk
+from nltk.tokenize import word_tokenize
+
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load spaCy's language model
+nlp = spacy.load("en_core_web_sm")
+nltk.download('punkt')
+# Load environment variables from .env file
+load_dotenv()
+
+
+def calculate_frame_similarity(sentence: str, frame_name: str) -> float:
+    """
+    Calculate enhanced semantic similarity between a sentence and a frame.
+    Uses a combination of exact matches and contextual similarity.
+    """
+    frame = fn.frame(frame_name)
+
+    # Extract verb from sentence
+    verb, _ = extract_verb_and_object(sentence)
+    if not verb:
+        return 0.0
+
+    # Get frame components
+    lexical_units = [lu.split('.')[0].lower() for lu in frame.lexUnit.keys()]
+    frame_elements = [fe.lower() for fe in frame.FE]
+
+    # Calculate exact match score for verb
+    verb_match_score = 1.0 if verb.lower() in lexical_units else 0.0
+
+    # Calculate lexical unit similarity
+    lu_similarity = 0.0
+    sentence_doc = nlp(sentence.lower())
+    frame_doc = nlp(" ".join(lexical_units))
+    lu_similarity = sentence_doc.similarity(frame_doc)
+
+    # Calculate frame element relevance
+    relevant_elements = set()
+    sentence_tokens = set(token.text.lower() for token in sentence_doc)
+    for element in frame_elements:
+        element_doc = nlp(element)
+        if any(element_doc.similarity(token_doc) > 0.7 for token_doc in sentence_doc):
+            relevant_elements.add(element)
+
+    element_score = len(relevant_elements) / len(frame_elements) if frame_elements else 0
+
+    # Weighted combination of scores
+    # Give more weight to verb match and lexical unit similarity
+    final_score = (0.5 * verb_match_score +
+                   0.3 * lu_similarity +
+                   0.2 * element_score)
+
+    print(f"\nDetailed similarity scores for {frame_name}:")
+    print(f"Verb match score: {verb_match_score:.4f}")
+    print(f"Lexical unit similarity: {lu_similarity:.4f}")
+    print(f"Frame element score: {element_score:.4f}")
+    print(f"Final score: {final_score:.4f}")
+
+    return final_score
+
+
+
+
+
+
+def ensure_nltk_resources():
+    """Ensure all required NLTK resources are downloaded"""
+    required_resources = ['punkt', 'averaged_perceptron_tagger']
+    for resource in required_resources:
+        try:
+            nltk.data.find(f'tokenizers/{resource}')
+        except LookupError:
+            print(f"Downloading required NLTK data: {resource}")
+            nltk.download(resource)
+
+
+def calculate_frame_perplexity(sentence: str, frame_name: str) -> float:
+    """
+    Calculate a perplexity-based relevance score between a sentence and a frame.
+    Lower perplexity indicates better relevance.
+    """
+    print(f"\nCalculating perplexity for frame: {frame_name}")
+
+    # Get frame elements and lexical units
+    frame = fn.frame(frame_name)
+    frame_elements = [fe.lower() for fe in frame.FE]
+    print(f"Frame Elements: {frame_elements}")
+
+    # Get all lexical units associated with the frame
+    frame_lus = []
+    for lu in frame.lexUnit.keys():
+        lu_clean = lu.split('.')[0].lower().replace('_', ' ')
+        frame_lus.append(lu_clean)
+    print(f"Lexical Units: {frame_lus}")
+
+    # Tokenize the sentence
+    sentence_tokens = sentence.lower().split()
+    print(f"Sentence tokens: {sentence_tokens}")
+
+    # Create vocabulary and calculate frequencies
+    frame_vocab = frame_elements + frame_lus
+    vocab_freq = Counter(frame_vocab)
+    print(f"Vocabulary frequencies: {dict(vocab_freq)}")
+
+    # Calculate probability distribution
+    total_terms = sum(vocab_freq.values())
+    vocab_probs = {term: count / total_terms for term, count in vocab_freq.items()}
+    print(f"Term probabilities: {vocab_probs}")
+
+    # Calculate cross-entropy
+    sentence_entropy = 0
+    matched_terms = 0
+    print("\nToken matching details:")
+
+    for token in sentence_tokens:
+        if token in vocab_probs:
+            prob = vocab_probs[token]
+            entropy_contribution = -np.log2(prob)
+            sentence_entropy += entropy_contribution
+            matched_terms += 1
+            print(f"Token '{token}' matched: probability={prob:.4f}, entropy contribution={entropy_contribution:.4f}")
+        else:
+            print(f"Token '{token}' not found in vocabulary")
+
+    if matched_terms == 0:
+        print("No terms matched - returning infinite perplexity")
+        return float('inf')
+
+    # Calculate final perplexity
+    perplexity = 2 ** (sentence_entropy / len(sentence_tokens))
+    print(f"\nFinal calculations:")
+    print(f"Total entropy: {sentence_entropy:.4f}")
+    print(f"Sentence length: {len(sentence_tokens)}")
+    print(f"Final perplexity score: {perplexity:.4f}")
+
+    return perplexity
+
+
+
+
+VERB_TYPES = {
+    "VB",    # Base form (take)
+    "VBD",   # Past tense (took)
+    "VBG",   # Gerund/present participle (taking)
+    "VBN",   # Past participle (taken)
+    "VBP",   # Non-3rd person singular present (take)
+    "VBZ",   # 3rd person singular present (takes)
+    "MD"     # Modal verbs (can, should, will)
+}
+
+
+def extract_verb_and_object(sentence: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extract verb and object from a sentence with improved handling of misidentified verbs.
+    """
+    doc = nlp(sentence)
+    verb_phrase = None
+    obj = None
+
+    # Debug output
+    print("\nDebug: Token Analysis")
+    print("-" * 60)
+    print(f"{'Token':15} {'POS':10} {'Tag':10} {'Dep':15} {'Head':10}")
+    print("-" * 60)
+    for token in doc:
+        print(f"{token.text:15} {token.pos_:10} {token.tag_:10} {token.dep_:15} {token.head.text:10}")
+
+    # Step 1: Check if first word can be a verb (regardless of its current POS tag)
+    first_token = doc[0]
+    test_doc = nlp(f"I {first_token.text} something")
+    test_verb = [t for t in test_doc if t.text == first_token.text][0]
+
+    if test_verb.pos_ == "VERB":
+        verb_phrase = first_token.text
+        print(f"Debug: First word '{first_token.text}' can be a verb")
+
+    # Step 2: If no verb found, try ROOT
+    if not verb_phrase and doc[0].dep_ == "ROOT":
+        test_doc = nlp(f"I {doc[0].text} something")
+        test_verb = [t for t in test_doc if t.text == doc[0].text][0]
+        if test_verb.pos_ == "VERB":
+            verb_phrase = doc[0].text
+            print(f"Debug: ROOT '{doc[0].text}' can be a verb")
+
+    # Step 3: If still no verb, look for any word that could be a verb
+    if not verb_phrase:
+        for token in doc:
+            test_doc = nlp(f"I {token.text} something")
+            test_verb = [t for t in test_doc if t.text == token.text][0]
+            if test_verb.pos_ == "VERB":
+                verb_phrase = token.text
+                print(f"Debug: Found potential verb: {verb_phrase}")
+                break
+
+    # Object finding (prioritize containers)
+    # First look for prepositional objects
+    prep_objects = [token for token in doc if token.dep_ == "pobj"]
+    print(f"\nDebug: Found prepositional objects: {[t.text for t in prep_objects]}")
+
+    # Then look for direct objects
+    direct_objects = [token for token in doc if token.dep_ == "dobj"]
+    print(f"Debug: Found direct objects: {[t.text for t in direct_objects]}")
+
+    # Choose object based on priority
+    if prep_objects:  # Prioritize prepositional objects (usually containers)
+        obj = prep_objects[-1].text
+    elif direct_objects:
+        obj = direct_objects[0].text
+    else:
+        # Try to find nouns that aren't part of the verb phrase
+        nouns = [token for token in doc if token.pos_ in ["NOUN", "PROPN"]
+                 and token.text != verb_phrase]
+        if nouns:
+            obj = nouns[-1].text
+            print(f"Debug: Found object from nouns: {obj}")
+
+    print(f"\nFinal Result - Verb: {verb_phrase}, Object: {obj}")
+    return verb_phrase, obj
+
+
+
+
+
+def find_frames_for_verb(verb: str, sentence: str, max_frames: int = 4, similarity_threshold: float = 0.3) -> List[str]:
+    """
+    Find frames in FrameNet associated with the given verb and filter by similarity score.
+    """
+    print(f"\nSearching for frames with verb: {verb}")
+    print(f"Similarity threshold: {similarity_threshold}")
+
+    frames = []
+    frame_scores = []
+    verb_search = verb.replace(" ", "_").lower()
+
+    # Collect potential frames
+    for frame in fn.frames():
+        frame_matched = False
+        for lu in frame.lexUnit.keys():
+            lu_name = lu.lower()
+            if lu_name.startswith(verb_search) or (verb_search in lu_name and '.v' in lu_name):
+                print(f"\nAnalyzing frame: {frame.name}")
+                frame_matched = True
+                break
+
+        if frame_matched:
+            similarity = calculate_frame_similarity(sentence, frame.name)
+            frame_scores.append((frame.name, similarity))
+
+    # Sort by similarity (higher is better) and filter
+    frame_scores.sort(key=lambda x: x[1], reverse=True)
+
+    print("\nAll frame scores (sorted):")
+    for frame_name, score in frame_scores:
+        print(f"Frame: {frame_name}, Similarity: {score:.4f}")
+
+    frames = [frame_name for frame_name, score in frame_scores
+              if score >= similarity_threshold][:max_frames]
+
+    print(f"\nSelected frames (after threshold {similarity_threshold}):")
+    for frame in frames:
+        print(f"- {frame}")
+
+    return frames
+
+def extract_frame_elements(frame_name: str) -> List[Dict]:
+    """
+    Extract Frame Elements (attributes) from a given frame with their descriptions.
+    """
+    frame = fn.frame(frame_name)
+    elements = []
+
+    for fe_name, fe in frame.FE.items():
+        element = {
+            'name': fe_name,
+            'definition': fe.definition,
+            'coretype': fe.coreType
+        }
+        elements.append(element)
+
+    return elements
+
+
+def analyze_preconditions(sentence: str, verb: str, obj: str, frame_name: str, elements: List[Dict]) -> Dict:
+    """
+    Ask GPT to analyze preconditions and required states for performing the action.
+    """
+    try:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("No OpenAI API key found in environment variables")
+
+        client = OpenAI(api_key=api_key)
+
+        prompt = f"""Given the action: "{sentence}"
+With verb: "{verb}" and object: "{obj}"
+Using frame: "{frame_name}"
+And frame elements: {[f"{e['name']}: {e['definition']}" for e in elements]}
+
+Analyze the necessary preconditions (attributes and their required states) needed to perform this action.
+First, determine if this frame is relevant for understanding the preconditions.
+Then, if relevant, list all physical and practical preconditions necessary for the action.
+
+Respond in this exact format (replace the example values):
+RELEVANT: [yes/no]
+PRECONDITIONS:
+- ATTRIBUTE: bottle_cap | STATE: removed
+- ATTRIBUTE: water_level | STATE: not empty
+
+Focus only on physical and practical preconditions necessary for the action to be possible."""
+
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",  # Changed from "gpt-4"
+            messages=[
+                {"role": "system",
+                 "content": "You are an AI trained to analyze physical preconditions required for actions."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.3
+        )
+
+        # Parse the text response
+        response_text = response.choices[0].message.content
+        lines = response_text.strip().split('\n')
+
+        is_relevant = lines[0].lower().split(':')[1].strip() == 'yes'
+        preconditions = []
+
+        if is_relevant and len(lines) > 2:
+            for line in lines[2:]:  # Skip the "RELEVANT:" and "PRECONDITIONS:" lines
+                if line.startswith('-'):
+                    parts = line.replace('-', '').strip().split('|')
+                    if len(parts) == 2:
+                        attr = parts[0].split(':')[1].strip()
+                        state = parts[1].split(':')[1].strip()
+                        preconditions.append({
+                            "attribute": attr,
+                            "required_state": state
+                        })
+
+        return {
+            "is_relevant": is_relevant,
+            "preconditions": preconditions
+        }
+
+    except Exception as e:
+        logger.error(f"Error in GPT analysis: {str(e)}")
+        return {
+            "is_relevant": False,
+            "preconditions": [],
+            "error": str(e)
+        }
+
+
+def categorize_unique_preconditions(obj: str, unique_preconditions: List[Dict]) -> Dict:
+    try:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("No OpenAI API key found in environment variables")
+
+        client = OpenAI(api_key=api_key)
+
+        preconditions_list = "\n".join([
+            f"- {p['attribute']}: {p['required_state']}"
+            for p in unique_preconditions
+        ])
+
+        prompt = f"""Here are attributes and their states for a {obj}:
+{preconditions_list}
+
+First list attributes belonging to physical parts of the {obj}, grouping them by part.
+Then list any remaining attributes (like gravity, space, force) under "other_requirements".
+
+Here's an example of how to categorize preconditions for emptying a bin:
+Preconditions organized by object parts:
+bin:
+  • contains_trash: yes
+  • accessible: yes
+  • not_empty: yes
+  • contents_accessibility: accessible
+  • bin_location: stable and reachable
+  • location: accessible
+  • contents_weight: liftable by human
+
+lid (if present on bin):
+  • open_or_removable: yes
+  • lid_on_bin: removable or open
+  • bin_lid: open or removable
+
+trash:
+  • not_adhered_to_bin: yes
+
+trash_bag (if the bin is lined):
+  • present: yes
+
+other_requirements:
+  • agent: capable of physical movement
+  • agent: present at the Source location
+  • agent: understands the task
+  • physical_ability: capable of lifting or tilting the bin
+  • agent: has means to carry trash (if necessary)
+  • container_for_disposal: available
+  • destination_for_trash: designated
+  • disposal_location: available
+
+Now, format your response exactly like this for the current object:
+PHYSICAL_PARTS:
+- PART: [part_name]
+  - [attribute]: [required_state]
+  - [attribute]: [required_state]
+
+OTHER_REQUIREMENTS:
+- [attribute]: [required_state]"""
+
+        response = client.chat.completions.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system",
+                 "content": "You are an AI that organizes object attributes by their physical parts."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.3
+        )
+
+        result = {}
+        current_section = None
+        current_part = None
+
+        for line in response.choices[0].message.content.strip().split('\n'):
+            line = line.strip()
+            if line == "PHYSICAL_PARTS:":
+                current_section = "physical"
+            elif line == "OTHER_REQUIREMENTS:":
+                current_section = "other"
+                current_part = "other_requirements"
+                result[current_part] = []
+            elif line.startswith("- PART:") and current_section == "physical":
+                current_part = line.replace("- PART:", "").strip()
+                result[current_part] = []
+            elif line.startswith("-") and current_part is not None:
+                attr_state = line.replace("-", "").strip().split(":")
+                if len(attr_state) == 2:
+                    result[current_part].append({
+                        'attribute': attr_state[0].strip(),
+                        'required_state': attr_state[1].strip()
+                    })
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error in GPT categorization: {str(e)}")
+        return {}
+
+
+
+
+
+def print_and_save_results(results: Dict):
+    import datetime
+    import os
+
+    results_dir = 'results'
+    os.makedirs(results_dir, exist_ok=True)
+
+    timestamp = datetime.datetime.now().strftime('%d-%B-%Y_%H-%M-%S')
+    sentence = f"{results['verb']}_{results['object']}"
+    filename = f"{results_dir}/{sentence}_{timestamp}.txt"
+
+    # Print full results to console
+    print(f"\nAnalysis for action involving verb '{results['verb']}' and object '{results['object']}'")
+    print("\nRelevant frames and their preconditions:")
+    for frame in results['frame_analyses']:
+        print(f"\nFrame: {frame['frame_name']}")
+        for precond in frame['preconditions']:
+            print(f"  • {precond['attribute']}: {precond['required_state']}")
+
+    if results['unique_preconditions']:
+        categorized = categorize_unique_preconditions(results['object'], results['unique_preconditions'])
+        output = ["Preconditions organized by object parts:"]
+
+        # First add physical parts
+        for part, attributes in categorized.items():
+            if part != "other_requirements":
+                output.append(f"\n{part}:")
+                for attr in attributes:
+                    output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        # Then add other requirements if they exist
+        if "other_requirements" in categorized and categorized["other_requirements"]:
+            output.append("\nOther requirements:")
+            for attr in categorized["other_requirements"]:
+                output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        with open(filename, 'w') as f:
+            f.write('\n'.join(output))
+
+        print('\n'.join(output))
+
+
+def print_and_save_results(results: Dict):
+    import datetime
+    import os
+
+    results_dir = 'results'
+    os.makedirs(results_dir, exist_ok=True)
+
+    # Format timestamp for better readability
+    timestamp = datetime.datetime.now().strftime('%d-%B-%Y_%H-%M-%S')
+    sentence = f"{results['verb']}_{results['object']}"
+    filename = f"{results_dir}/{sentence}_{timestamp}.txt"
+
+    # Print full results to console
+    print(f"\nAnalysis for action involving verb '{results['verb']}' and object '{results['object']}'")
+    print("\nRelevant frames and their preconditions:")
+    for frame in results['frame_analyses']:
+        print(f"\nFrame: {frame['frame_name']}")
+        for precond in frame['preconditions']:
+            print(f"  • {precond['attribute']}: {precond['required_state']}")
+
+    # Prepare and save only the categorized preconditions
+    if results['unique_preconditions']:
+        categorized = categorize_unique_preconditions(results['object'], results['unique_preconditions'])
+        output = ["Preconditions organized by object parts:"]
+
+        for part, attributes in categorized.items():
+            output.append(f"\n{part}:")
+            for attr in attributes:
+                output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        with open(filename, 'w') as f:
+            f.write('\n'.join(output))
+
+        print('\n'.join(output))
+
+
+# Update the process_sentence function to pass the verb to categorize_unique_preconditions
+def process_sentence(sentence: str) -> Dict:
+    """
+    Process the sentence to find relevant frames and their required preconditions.
+    """
+    # Extract verb and object
+    verb, obj = extract_verb_and_object(sentence)
+    if not verb or not obj:
+        return {"error": "Could not extract verb or object."}
+
+    print(f"Extracted - Verb: {verb}, Object: {obj}")
+
+    # Find relevant frames using similarity
+    frames = find_frames_for_verb(verb, sentence)
+    if not frames:
+        return {"error": f"No relevant frames found for verb '{verb}'."}
+
+    # Analyze each frame
+    frame_analyses = []
+    all_preconditions = []
+
+    for frame_name in frames:
+        try:
+            elements = extract_frame_elements(frame_name)
+            analysis = analyze_preconditions(sentence, verb, obj, frame_name, elements)
+            frame_analyses.append({
+                'frame_name': frame_name,
+                'preconditions': analysis['preconditions']
+            })
+            all_preconditions.extend(analysis['preconditions'])
+
+        except Exception as e:
+            logger.error(f"Error processing frame {frame_name}: {str(e)}")
+            continue
+
+    # Remove duplicate preconditions
+    unique_preconditions = []
+    seen = set()
+    for p in all_preconditions:
+        key = (p['attribute'], p['required_state'])
+        if key not in seen:
+            seen.add(key)
+            unique_preconditions.append(p)
+
+    return {
+        "verb": verb,
+        "object": obj,
+        "frame_analyses": frame_analyses,
+        "unique_preconditions": unique_preconditions
+    }
+
+
+# Test code
+if __name__ == "__main__":
+    test_sentences = [
+        #"spill water from bottle",
+        "I pour juice into glass",
+        "open the door",
+        "empty trash from bin",
+    ]
+
+    for test_sentence in test_sentences:
+        print(f"\n{'=' * 50}")
+        print(f"Processing: '{test_sentence}'")
+
+        try:
+            results = process_sentence(test_sentence)
+
+            if 'error' in results:
+                print(f"Error processing sentence: {results['error']}")
+                continue
+
+            # Save the results to file and print them
+            print_and_save_results(results)
+
+        except Exception as e:
+            print(f"Error processing sentence '{test_sentence}': {str(e)}")
+            continue
+
+        print(f"{'=' * 50}\n")

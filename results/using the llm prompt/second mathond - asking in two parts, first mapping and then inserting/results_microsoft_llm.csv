@@ -1,0 +1,172 @@
+ID,Sentence,Frame #,Verb,Object,Envoked Frame,Ground Truth (Manually Checking),Frame Definition,Notes,Did the model Predicte the Frame,LLM Merged Sentence,Sentence Components,Unnamed: 6
+METRICS,,,,,,,,"Accuracy: 65.85%, Precision: 0.00%, Recall: 0.00%, F1: 0.00%",,,,
+1,I open the door.,1,open,door,Closure,yes,"An Agent manipulates a Fastener to open or close a Containing_object (e.g. coat, jar).  Sometimes an Enclosed_region or a Container_portal may be expressed. Since the Manipulator is syntactically omissible, many verbs in this frame incorporate the Fastener.  'Mary closed her coat with a belt.' 'Mary closed her coat with one hand.' 'Mary buttoned her coat .'",Confidence: 0.004,,I manipulate a fastener to open the door.,"components: 
+who: I
+verb: open
+object: the door",
+1,I open the door.,2,open,door,Body_movement,no,"This frame contains words for motions or actions an Agent performs using some part of his/her body.   A number of words in this frame occur as blends with Communication, in which the action has an Addressee.  For example,   'Pat nodded at Kim.'  These examples differ from Communication.Gesture in that no specific message need be expressed, as in  'She nodded to him to sit down.'  Since this frame involves a particular type of motion, it contains the frame elements Source, Path, Goal and Area, which originate in the motion frame.  All of these frame elements are generally expressed in PP Complements.  'The boy swung his legs from under the table.'",Confidence: 0.004,,I open the door using my hands as part of an action performed with my body.,"components: 
+who: I
+verb: open
+object: the door",
+1,I open the door.,3,open,door,Activity_start,no,"An Agent initiates the beginning of an ongoing Activity in which he will be continuously involved. '' 'At the same time, city-states began to grow in influence on the southern Greek mainland.'  'Naturally, I started crying to get out of work.'  ",Confidence: 0.000,,I open the door to initiate an ongoing activity in which I will be continuously involved.,"components: 
+who: I
+verb: open
+object: the door",
+2,I close the door.,1,close,door,Closure,yes,"An Agent manipulates a Fastener to open or close a Containing_object (e.g. coat, jar).  Sometimes an Enclosed_region or a Container_portal may be expressed. Since the Manipulator is syntactically omissible, many verbs in this frame incorporate the Fastener.  'Mary closed her coat with a belt.' 'Mary closed her coat with one hand.' 'Mary buttoned her coat .'",Confidence: 0.004,,I manipulate a fastener to close the door.,"components: 
+who: I
+verb: close
+object: the door",
+2,I close the door.,2,close,door,Reveal_secret,no,"A Speaker reveals Information that was previously secret to an Addressee. In some cases, the Addressee is expected to keep the Information from other parties. The Information may be damaging to the reputation of the Speaker. Instead of (or in addition to) a Speaker, a Medium may also be mentioned. Likewise, a Topic may be stated instead of Information. Some lexical units in this frame imply that the Addressee has already been confronted with the Information.    'Could it be true that Martin himself was the one who spilled the beans on Pops and Brad's planned wedding? '  ",Confidence: 0.002,,I close the door as a way of revealing previously secret information to an addressee.,"components: 
+who: I
+verb: close
+object: the door",
+2,I close the door.,3,close,door,Body_movement,no,"This frame contains words for motions or actions an Agent performs using some part of his/her body.   A number of words in this frame occur as blends with Communication, in which the action has an Addressee.  For example,   'Pat nodded at Kim.'  These examples differ from Communication.Gesture in that no specific message need be expressed, as in  'She nodded to him to sit down.'  Since this frame involves a particular type of motion, it contains the frame elements Source, Path, Goal and Area, which originate in the motion frame.  All of these frame elements are generally expressed in PP Complements.  'The boy swung his legs from under the table.'",Confidence: 0.001,,I close the door using my hand.,"components: 
+who: I
+verb: close
+object: the door",
+3,I knock on the door.,1,knock,door,Impact,no,"While in motion, an Impactor makes sudden, forcible contact with the Impactee, or two Impactors both move, mutually making forcible contact.   'The massive metal foot hit the ground with a huge thud.' ",Confidence: 0.003,,"I, while in motion, knock on the door, making sudden, forcible contact with it.","components: 
+who: I
+verb: knock
+object: (implied object, not directly stated)
+preposition: on
+preposition_object: the door",
+3,I knock on the door.,2,knock,door,Cause_harm,no,"The words in this frame describe situations in which an Agent or a Cause injures a Victim. The Body_part of the Victim which is most directly affected may also be mentioned in the place of the Victim.  In such cases, the Victim is often indicated as a genitive modifier of the Body_part, in which case the Victim FE is indicated on a second FE layer. '' 'Rod saw his father beating his mother.'  'In the end Wormtongue is fed up with being beaten so he cuts Saruman's throat to free himself.'  'A mother stabbed to death by her husband made a secret will stating that he must never be allowed to care for their son.'",Confidence: 0.002,,I knock on the door as a cause that injures a victim,"components: 
+who: I
+verb: knock
+object: (implied object, not directly stated)
+preposition: on
+preposition_object: the door",
+3,I knock on the door.,3,knock,door,Sex,yes,"Participants in a Sex act engage in or are subjected to sexual contact. Often the LUs in this frame are suggestive euphemisms which refer to non-sexual physical contact, Giving/Receiving scenarios, frames related to travel, physical orientation, body metonymy, biological necessity, or a simple completion of Activity.  ",Confidence: 0.001,,I knock on the door as a form of engagement in an act.,"components: 
+who: I
+verb: knock
+object: (implied object, not directly stated)
+preposition: on
+preposition_object: the door",
+5,I open the backpack.,1,open,backpack,Closure,yes,"An Agent manipulates a Fastener to open or close a Containing_object (e.g. coat, jar).  Sometimes an Enclosed_region or a Container_portal may be expressed. Since the Manipulator is syntactically omissible, many verbs in this frame incorporate the Fastener.  'Mary closed her coat with a belt.' 'Mary closed her coat with one hand.' 'Mary buttoned her coat .'",Confidence: 0.002,,I manipulate a fastener to open the backpack.,"components: 
+who: I
+verb: open
+object: the backpack",
+5,I open the backpack.,2,open,backpack,Body_movement,no,"This frame contains words for motions or actions an Agent performs using some part of his/her body.   A number of words in this frame occur as blends with Communication, in which the action has an Addressee.  For example,   'Pat nodded at Kim.'  These examples differ from Communication.Gesture in that no specific message need be expressed, as in  'She nodded to him to sit down.'  Since this frame involves a particular type of motion, it contains the frame elements Source, Path, Goal and Area, which originate in the motion frame.  All of these frame elements are generally expressed in PP Complements.  'The boy swung his legs from under the table.'",Confidence: 0.001,,I open the backpack using my hands.,"components: 
+who: I
+verb: open
+object: the backpack",
+5,I open the backpack.,3,open,backpack,Activity_start,no,"An Agent initiates the beginning of an ongoing Activity in which he will be continuously involved. '' 'At the same time, city-states began to grow in influence on the southern Greek mainland.'  'Naturally, I started crying to get out of work.'  ",Confidence: 0.001,,I open the backpack to initiate an ongoing activity in which I will be continuously involved.,"components: 
+who: I
+verb: open
+object: the backpack",
+6,I close the backpack.,1,close,backpack,Closure,yes,"An Agent manipulates a Fastener to open or close a Containing_object (e.g. coat, jar).  Sometimes an Enclosed_region or a Container_portal may be expressed. Since the Manipulator is syntactically omissible, many verbs in this frame incorporate the Fastener.  'Mary closed her coat with a belt.' 'Mary closed her coat with one hand.' 'Mary buttoned her coat .'",Confidence: 0.002,,I manipulate a fastener to close the backpack.,"components: 
+who: I
+verb: close
+object: the backpack",
+6,I close the backpack.,2,close,backpack,Reveal_secret,no,"A Speaker reveals Information that was previously secret to an Addressee. In some cases, the Addressee is expected to keep the Information from other parties. The Information may be damaging to the reputation of the Speaker. Instead of (or in addition to) a Speaker, a Medium may also be mentioned. Likewise, a Topic may be stated instead of Information. Some lexical units in this frame imply that the Addressee has already been confronted with the Information.    'Could it be true that Martin himself was the one who spilled the beans on Pops and Brad's planned wedding? '  ",Confidence: 0.002,,"I close the backpack, revealing previously secret information to an addressee.","components: 
+who: I
+verb: close
+object: the backpack",
+6,I close the backpack.,3,close,backpack,Business_closure,no,"A business locale, the Entity, ceases to provide services and closes.   'Exxon went under.'",Confidence: 0.001,,"I close the backpack, ceasing to provide its services as a business locale would.","components: 
+who: I
+verb: close
+object: the backpack",
+8,I tear the backpack.,1,tear,backpack,Damaging,no,"An Agent affects a Patient in such a way that the Patient (or some Subregion of the Patient) ends up in a non-canonical state.  Often this non-canonical state is undesirable, and some lexical units (marked with the Negative semantic type) specifically indicate that the Patient is negatively affected.  Some lexical units of this frame indicate by what means the Patient is altered (e.g., scrape.v) and in some cases give some indication of the detailed effect on the Patient (e.g., score.v, chip.v), and in other cases, both are specified (tear.v). For another set of lexical units, the action and its result are much less specified (e.g., damage.v).  Compare this frame with Destroying, Cause_to_fragment, and Render_nonfunctional.  'That idiot just dented my car!' 'Some ne'er-do-wells defaced the Park's wall with spray paint to show their anger at local natural resources allocation policy.' 'Please don't damage the goods.'",Confidence: 0.003,,I tear the backpack in such a way that it affects the backpack.,"components: 
+who: I
+verb: tear
+object: the backpack",
+8,I tear the backpack.,2,tear,backpack,Experience_bodily_harm,yes,"An Experiencer is involved in a bodily injury to a Body_part.  (In some cases, no Body_part need be indicated.)  Often an Injuring_entity on which the Experiencer injures themselves is mentioned. 'I think that I hurt myself pretty bad back there.' 'He smacked his head on the mantel getting up from poking at the fire.'",Confidence: 0.002,,I tear the backpack as if it were a body part involved in a bodily injury.,"components: 
+who: I
+verb: tear
+object: the backpack",
+8,I tear the backpack.,3,tear,backpack,Cause_to_fragment,yes,"An Agent suddenly and often violently separates the Whole_patient into two or more smaller Pieces, resulting in the Whole_patient no longer existing as such.  Several lexical items are marked with the semantic type Negative, which indicates that the fragmentation is necessarily judged as injurious to the original Whole_patient.  Compare this frame with Damaging, Render_non-functional, and Removing.  'He ripped up the letter faster than you can say ""Jack Robbins"". INI' 'Don't go in there or you 'll be torn to bits! CNI' 'She shattered the vase with a casual backhand blow to make it look like there had been a struggle. INI' 'Tear into 6"" strips, each about one inch wide, then bake at 400. CNI CNI'",Confidence: 0.001,,"I tear the backpack, suddenly separating it into two or more smaller pieces, resulting in it no longer existing as a whole.","components: 
+who: I
+verb: tear
+object: the backpack",
+8,I tear the backpack.,4,tear,backpack,Removing,no,"An Agent causes a Theme to move away from a location, the Source.  The Sourceis profiled by the words in this frame, just as the Goal is profiled in the Placing frame.  'I saw that several men in dark suits had removed all of the evidence from the scene.' 'With your index finger prise the meat out of the shell' 'The torrential winds dislodged most of the roof tiles.'",Confidence: 0.001,,I tear the backpack away from its location.,"components: 
+who: I
+verb: tear
+object: the backpack",
+9,I open the laptop.,1,open,laptop,Closure,yes,"An Agent manipulates a Fastener to open or close a Containing_object (e.g. coat, jar).  Sometimes an Enclosed_region or a Container_portal may be expressed. Since the Manipulator is syntactically omissible, many verbs in this frame incorporate the Fastener.  'Mary closed her coat with a belt.' 'Mary closed her coat with one hand.' 'Mary buttoned her coat .'",Confidence: 0.003,,I manipulate a fastener to open the laptop.,"components: 
+who: I
+verb: open
+object: the laptop",
+9,I open the laptop.,2,open,laptop,Body_movement,no,"This frame contains words for motions or actions an Agent performs using some part of his/her body.   A number of words in this frame occur as blends with Communication, in which the action has an Addressee.  For example,   'Pat nodded at Kim.'  These examples differ from Communication.Gesture in that no specific message need be expressed, as in  'She nodded to him to sit down.'  Since this frame involves a particular type of motion, it contains the frame elements Source, Path, Goal and Area, which originate in the motion frame.  All of these frame elements are generally expressed in PP Complements.  'The boy swung his legs from under the table.'",Confidence: 0.001,,I open the laptop using my hands.,"components: 
+who: I
+verb: open
+object: the laptop",
+9,I open the laptop.,3,open,laptop,Activity_start,no,"An Agent initiates the beginning of an ongoing Activity in which he will be continuously involved. '' 'At the same time, city-states began to grow in influence on the southern Greek mainland.'  'Naturally, I started crying to get out of work.'  ",Confidence: 0.000,,I open the laptop to initiate an ongoing activity in which I will be continuously involved.,"components: 
+who: I
+verb: open
+object: the laptop",
+14,I drop the pencil.,1,drop,pencil,Giving_birth,yes,A Mother and Father produce a Child or an Egg. 'Betty bore Gerry three intelligent daughters.',Confidence: 0.003,,I drop the pencil as a mother and father would produce a child.,"components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,2,drop,pencil,Drop_in_on,no,"A Visitor arrives at the Host_location as a guest of the Host, for the purpose of achieving a Purpose. The Purpose is often social in nature, i.e., the visit itself constitutes a goal.  'I'm gonna drop in on Kieth for a while.' ",Confidence: 0.002,,I drop the pencil as a guest arrives at the host location for the purpose of achieving a purpose.,"components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,3,drop,pencil,Perception_active,yes,"This frame contains perception words whose perceivers intentionally direct their attention to some entity or phenomenon in order to have a perceptual experience.  For this reason we call the perceiver role in this frame Perceiver_agentive.    'She gazed upon him fondly.'  Comparing the Perception_active frame to the Perception_experience frame, we note that for some modalities there are different lexical items in each frame.  For instance, whereas Perception_active contains the verb phrase look at, Perception_experience contains see.   For other sense modalities, we find the same lexical item in both frames.  To illustrate, consider the verb smell.  This first sentence exemplifies the Perception_active use of the verb smell:'Smell this to see if it's fresh.CNI' This second sentence exemplifies its Perception_experience sense: 'I smell something rotten.'  ",Confidence: 0.002,,I drop the pencil to intentionally direct my attention to the phenomenon of its fall.,"components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,4,drop,pencil,Body_movement,no,"This frame contains words for motions or actions an Agent performs using some part of his/her body.   A number of words in this frame occur as blends with Communication, in which the action has an Addressee.  For example,   'Pat nodded at Kim.'  These examples differ from Communication.Gesture in that no specific message need be expressed, as in  'She nodded to him to sit down.'  Since this frame involves a particular type of motion, it contains the frame elements Source, Path, Goal and Area, which originate in the motion frame.  All of these frame elements are generally expressed in PP Complements.  'The boy swung his legs from under the table.'",Confidence: 0.001,,I drop the pencil as an action performed using my hand.,"components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,5,drop,pencil,Change_posture,yes,A Protagonist changes the overall position and posture of the body.  'Smithers leaned forward to grab the folder on the far side.',Confidence: 0.001,,I drop the pencil as a change in the overall position and posture of the body.,"components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,6,drop,pencil,Motion_directional,no,"In this frame a Theme moves in a certain Direction which is often determined by gravity or other natural, physical forces. The Theme is not necessarily a self-mover.  ' The paper fell to the floor.'  ' The girl dropped 13 stories to her death.'",Confidence: 0.001,,"I drop the pencil, allowing it to move downward as dictated by gravity.","components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,7,drop,pencil,Cause_motion,no,"An Agent causes a Theme to move from a Source, along a Path, to a Goal.  Different members of the frame emphasize the trajectory to different degrees, and a given instance of the frame will usually leave some of the Source, Path and/or Goal implicit. The completion of motion is not required (unlike the Placing frame, see below), although individual sentences annotated with this frame may emphasize the Goal.   '' This frame is very broad and contains several different kinds of words that refer to causing motion.  Some words in this frame do not emphasize the Manner/Means of causing the motion (transfer.v, move.v).  For many of the others (cast.v, throw.v, chuck.v, etc.), the Agent has control of the Theme only at the Source of motion, and does not experience overall motion.  For others (e.g. drag.v, push.v, shove.v, etc.) the Agent has control of the Theme throughout the motion; for these words, the Theme is resistant to motion due to some friction with the surface along which they move.    'She threw her shoes into the dryer .' 'The mechanic dragged the jack out from under the car .' 'We will move the sofa out of the room through the french doors, down the stairs, and onto the sidewalk .' '' ''  This frame is used in a very large number of productive metaphors, not all of which can be outlined here.  The most salient types include causing an entity, construed as a Theme, to change state from an initial state (Source) via an intermediate state (Path) to a final state (Goal): 'Hillary was catapulted to stardom and his life has never been the same since . CNI' 'She felt as though flung from health to illness and back by the day , by the hour .' 'Once our parents are dead , we are catapulted into becoming the older generation ourselves . CNI' 'Croquet was pushed out by tennis .' ''  A particularly divergent subtype casts changing someone's intentions as changing their location: 'Democratsforced the Senate into a rare closed door session .' 'He nudged Mrs Thatcher towards acceptance of a unified Germany .' ''  Another subtype is specifically about causing a change in quantity (the Theme) through some sequence of values (Source, Path, and Goal): 'Bonus payments would be handed out for pushing up voting levels CNI .' ''  Another type, with many subtypes, involves causing an action or state (construed as a Theme) to have an effect on another person or location or conceptual domain. In such cases, theGoal is used for the final affected domain, and Source for initial affected domain, Path for an intermediate affected domain, and Distance for degree of difference between original application of the action and final: 'Jake had been hurling these same insults at her now for years' 'One can not press this argument too far .' 'She shoved the thought to the very back of her mind .' 'She flung him a savage little smile .' All of the foregoing metaphorical uses are annotated in this frame and marked ""Metaphor"", since they seem to be semantically motivated and not lexically idiosyncratic. '' ''  This frame contrasts with the following frames which talk about an Agent changing a Theme's position with respect to a landmark (either Source or Goal): ''  In Placing, the figure (Theme) is profiled as the object, and ends up on the ground (Goal).  The focus is on the final stage of motion, in which the Theme ends up at the Goal, and usually stably remains there. 'Joyce placed the flowers onto the bed.' ''  In Filling, the ground (Goal) is profiled as the object, and the figure (Theme) ends up on the ground (Goal). 'John filled the box with old toys.' ''  In Removing, the figure (Theme) is profiled, and is removed from the ground (Source). 'Jennifer removed the flowers from the bed.' ''  In Emptying, the ground (Source) is profiled and the figure (Theme) is removed from it. 'Jason emptied the box of the old toys .' ''  Words of this frame also differ from the words of the Bringing frame in that they are more general:  either the Agent has a momentary interaction with the Theme that causes its motion, unlike the continuous causation of Bringing, or the Agent continuously acts on the Theme, but there is no supporting object that helps with the motion like the Carrier of the Bringing frame.  ",Confidence: 0.001,,"I drop the pencil, causing it to move from my hand, along a path, to the ground.","components: 
+who: I
+verb: drop
+object: the pencil",
+14,I drop the pencil.,8,drop,pencil,Path_shape,yes,"The words in this frame describe the ""fictive"" motion of a stationary Road.  Some of the targets cast the scene primarily in terms of the Path_shape:  'The long mountain road meandered through the woods.'  Some of the words in this frame imply a Source or Goal which is expressed by a direct object:  'The path entered the garden on the west side.'  Other members of the frame refer to a Direction: 'Then the path bears a little to the right.'  Yet others indicate a Path which requires mention of a landmark:  'The otherwise arrow-straight highway veers north and skirts the lake.'",Confidence: 0.001,,I drop the pencil as if tracing the stationary road's fictive motion.,"components: 
+who: I
+verb: drop
+object: the pencil",
+15,I sharpen the pencil.,1,sharpen,pencil,Cause_to_be_sharp,yes,An Agent or Cause makes a Patient sharper or duller.  An Instrument or Means may be mentioned.  'John is in the basement sharpening his axe.',Confidence: 0.000,,"I sharpen the pencil, making it sharper.","components: 
+who: I
+verb: sharpen
+object: the pencil",
+19,I break the guitar.,1,break,guitar,Breaking_off,no,An single Subpart breaks off from a Whole.  'The original sword may have chipped off of the statue long ago.',Confidence: 0.008,,I break the guitar as a single subpart breaks off from a whole.,"components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,2,break,guitar,Breaking_out_captive,no,An Agent brings about the end of a Theme's captivity at a Location_of_confinement in contravention of the plans or desires of a captor.  'His accomplice freed him from Sing Sing prison thanks to his disguise.' ,Confidence: 0.003,,"I break the guitar, ending its confinement at a location against the desires of a captor.","components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,3,break,guitar,Ingestion,no,"An Ingestor consumes food or drink (Ingestibles), which entails putting the Ingestibles in the mouth for delivery to the digestive system.  This may include the use of an Instrument.  Sentences that describe the provision of food to others are NOT included in this frame.  'The wolves devoured the carcass completely.'",Confidence: 0.003,,I break the guitar as if consuming food or drink.,"components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,4,break,guitar,Experience_bodily_harm,no,"An Experiencer is involved in a bodily injury to a Body_part.  (In some cases, no Body_part need be indicated.)  Often an Injuring_entity on which the Experiencer injures themselves is mentioned. 'I think that I hurt myself pretty bad back there.' 'He smacked his head on the mantel getting up from poking at the fire.'",Confidence: 0.002,,I break the guitar as if it were a body part involved in a bodily injury.,"components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,5,break,guitar,Breaking_apart,no,"A Whole breaks apart into Pieces, resulting in the loss of the Whole (and in most cases, no piece that has a separate function).  'The plane violently broke apart in mid-air.'  'And then, I finally realized that it must have been the case that a meteorite broke apart into at least 3 large pieces.'  Many of these verbs can also refer metaphorically to the breaking apart of institutions. (See the frame for ""schism"".)",Confidence: 0.002,,"I break the guitar, resulting in it breaking apart into pieces and the loss of the whole.","components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,6,break,guitar,Activity_pause,no,An Agent pauses in the course of an Activity. '' 'The government froze settlement construction in 1992 to facilitate peace talks.'  'The lifting of the nuclear freeze was deemed necessary to generate needed electricity.',Confidence: 0.002,,I break the guitar as a pause in the course of an activity.,"components: 
+who: I
+verb: break
+object: the guitar",
+19,I break the guitar.,7,break,guitar,Catching_fire,no,"A Fuel, some flammable object or substance, ends up on fire.  In this frame, the cause of the fire is not the primary concern, but rather the fact that a fire started.  In rare cases, only the Fire is mentioned and the associated Fuel is not.  '' This frame does not include phrases like ""a fire broke out"" or ""the conflagration started in the bedroom"" as these are deemed to be compositional (see Process_start and Fire_burning).",Confidence: 0.002,,I break the guitar as a flammable object ends up on fire.,"components: 
+who: I
+verb: break
+object: the guitar",
+20,I smash the guitar.,1,smash,guitar,Impact,no,"While in motion, an Impactor makes sudden, forcible contact with the Impactee, or two Impactors both move, mutually making forcible contact.   'The massive metal foot hit the ground with a huge thud.' ",Confidence: 0.003,,"I, while in motion, smash the guitar, making sudden, forcible contact with it as the impactee.","components: 
+who: I
+verb: smash
+object: the guitar",
+20,I smash the guitar.,2,smash,guitar,Cause_to_fragment,yes,"An Agent suddenly and often violently separates the Whole_patient into two or more smaller Pieces, resulting in the Whole_patient no longer existing as such.  Several lexical items are marked with the semantic type Negative, which indicates that the fragmentation is necessarily judged as injurious to the original Whole_patient.  Compare this frame with Damaging, Render_non-functional, and Removing.  'He ripped up the letter faster than you can say ""Jack Robbins"". INI' 'Don't go in there or you 'll be torn to bits! CNI' 'She shattered the vase with a casual backhand blow to make it look like there had been a struggle. INI' 'Tear into 6"" strips, each about one inch wide, then bake at 400. CNI CNI'",Confidence: 0.001,,"I smash the guitar, suddenly and violently separating it into smaller pieces, resulting in it no longer existing as a whole.","components: 
+who: I
+verb: smash
+object: the guitar",
+20,I smash the guitar.,3,smash,guitar,Cause_harm,no,"The words in this frame describe situations in which an Agent or a Cause injures a Victim. The Body_part of the Victim which is most directly affected may also be mentioned in the place of the Victim.  In such cases, the Victim is often indicated as a genitive modifier of the Body_part, in which case the Victim FE is indicated on a second FE layer. '' 'Rod saw his father beating his mother.'  'In the end Wormtongue is fed up with being beaten so he cuts Saruman's throat to free himself.'  'A mother stabbed to death by her husband made a secret will stating that he must never be allowed to care for their son.'",Confidence: 0.001,,"I smash the guitar, injuring it as a victim.","components: 
+who: I
+verb: smash
+object: the guitar",

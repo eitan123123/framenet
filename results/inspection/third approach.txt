@@ -1,0 +1,324 @@
+================================================================================
+Analysis for ID: 1, Frame #1
+================================================================================
+
+Original Data:
+Sentence: I open the door.
+Ground Truth: yes
+Frame: Closure
+
+Sentence Analysis:
+--------------------
+who: I
+verb: open
+object_on_which_the_action_is_made: door
+
+Frame Definition Analysis:
+--------------------
+Original: an agent manipulates a fastener to open or close a containing object.
+who: agent
+verb: manipulates
+object_on_which_the_action_is_made: fastener
+
+Component Matching Results:
+--------------------
+Substituted Definition: an i open a door to open or close a containing object.
+
+NLI Analysis:
+--------------------
+Premise: I open the door.
+Hypothesis: This is an event where an i open a door to open or close a containing object.
+entailment: 0.4731
+neutral: 0.5254
+contradiction: 0.0015
+
+================================================================================
+
+================================================================================
+Analysis for ID: 1, Frame #2
+================================================================================
+
+Original Data:
+Sentence: I open the door.
+Ground Truth: no
+Frame: Body_movement
+
+Sentence Analysis:
+--------------------
+who: I
+verb: open
+object_on_which_the_action_is_made: door
+
+Frame Definition Analysis:
+--------------------
+Original: this frame contains words for motions or actions an agent performs using some part of his/her body.
+who: agent
+verb: performs
+object_on_which_the_action_is_made: motions or actions
+
+Component Matching Results:
+--------------------
+Substituted Definition: this frame contains words for door an i open using some part of his/her body.
+
+NLI Analysis:
+--------------------
+Premise: I open the door.
+Hypothesis: This is an event where this frame contains words for door an i open using some part of his/her body.
+entailment: 0.8869
+neutral: 0.1111
+contradiction: 0.0020
+
+================================================================================
+
+================================================================================
+Analysis for ID: 1, Frame #3
+================================================================================
+
+Original Data:
+Sentence: I open the door.
+Ground Truth: no
+Frame: Activity_start
+
+Sentence Analysis:
+--------------------
+who: I
+verb: open
+object_on_which_the_action_is_made: door
+
+Frame Definition Analysis:
+--------------------
+Original: an agent initiates the beginning of an ongoing activity in which he will be continuously involved.
+who: agent
+verb: initiates
+object_on_which_the_action_is_made: beginning
+
+Component Matching Results:
+--------------------
+Substituted Definition: an i open the door of an ongoing activity in which he will be continuously involved.
+
+NLI Analysis:
+--------------------
+Premise: I open the door.
+Hypothesis: This is an event where an i open the door of an ongoing activity in which he will be continuously involved.
+entailment: 0.0128
+neutral: 0.9860
+contradiction: 0.0012
+
+================================================================================
+
+================================================================================
+Analysis for ID: 20, Frame #1
+================================================================================
+
+Original Data:
+Sentence: I smash the guitar.
+Ground Truth: no
+Frame: Cause_harm
+
+Sentence Analysis:
+--------------------
+who: I
+verb: smash
+object_on_which_the_action_is_made: guitar
+
+Frame Definition Analysis:
+--------------------
+Original: the words in this frame describe situations in which an agent or a cause injures a victim.
+who: agent or a cause
+verb: injures
+object_on_which_the_action_is_made: victim
+
+Component Matching Results:
+--------------------
+Substituted Definition: the words in this frame describe situations in which an i smash a guitar.
+
+NLI Analysis:
+--------------------
+Premise: I smash the guitar.
+Hypothesis: This is an event where the words in this frame describe situations in which an i smash a guitar.
+entailment: 0.9570
+neutral: 0.0419
+contradiction: 0.0012
+
+================================================================================
+
+================================================================================
+Analysis for ID: 15, Frame #1
+================================================================================
+
+Original Data:
+Sentence: I sharpen the pencil.
+Ground Truth: yes
+Frame: Cause_to_be_sharp
+
+Sentence Analysis:
+--------------------
+who: I
+verb: sharpen
+object_on_which_the_action_is_made: pencil
+
+Frame Definition Analysis:
+--------------------
+Original: an agent or cause makes a patient sharper or duller.
+who: agent or cause
+verb: makes
+object_on_which_the_action_is_made: patient
+
+Component Matching Results:
+--------------------
+Substituted Definition: an i sharpen a pencil sharper or duller.
+
+NLI Analysis:
+--------------------
+Premise: I sharpen the pencil.
+Hypothesis: This is an event where an i sharpen a pencil sharper or duller.
+entailment: 0.9725
+neutral: 0.0239
+contradiction: 0.0036
+
+================================================================================
+
+================================================================================
+Analysis for ID: 14, Frame #4
+================================================================================
+
+Original Data:
+Sentence: I drop the pencil.
+Ground Truth: no
+Frame: Giving_birth
+
+Sentence Analysis:
+--------------------
+who: I
+verb: drop
+object_on_which_the_action_is_made: pencil
+
+Frame Definition Analysis:
+--------------------
+Original: a mother and father produce a child or an egg.
+who: a mother and father
+verb: produce
+object_on_which_the_action_is_made: a child or an egg
+
+Component Matching Results:
+--------------------
+Substituted Definition: i drop pencil.
+
+NLI Analysis:
+--------------------
+Premise: I drop the pencil.
+Hypothesis: This is an event where i drop pencil.
+entailment: 0.9838
+neutral: 0.0154
+contradiction: 0.0007
+
+================================================================================
+
+================================================================================
+Analysis for ID: 8, Frame #2
+================================================================================
+
+Original Data:
+Sentence: I tear the backpack.
+Ground Truth: yes
+Frame: Cause_to_fragment
+
+Sentence Analysis:
+--------------------
+who: I
+verb: tear
+object_on_which_the_action_is_made: backpack
+
+Frame Definition Analysis:
+--------------------
+Original: an agent suddenly and often violently separates the whole patient into two or more smaller pieces, resulting in the whole patient no longer existing as such.
+who: agent
+verb: separates
+object_on_which_the_action_is_made: the whole patient
+
+Component Matching Results:
+--------------------
+Substituted Definition: an i suddenly and often violently tear backpack into two or more smaller pieces, resulting in backpack no longer existing as such.
+
+NLI Analysis:
+--------------------
+Premise: I tear the backpack.
+Hypothesis: This is an event where an i suddenly and often violently tear backpack into two or more smaller pieces, resulting in backpack no longer existing as such.
+entailment: 0.0106
+neutral: 0.9889
+contradiction: 0.0005
+
+================================================================================
+
+================================================================================
+Analysis for ID: 14, Frame #3
+================================================================================
+
+Original Data:
+Sentence: I drop the pencil.
+Ground Truth: yes
+Frame: Change_position_on_a_scale
+
+Sentence Analysis:
+--------------------
+who: I
+verb: drop
+object_on_which_the_action_is_made: pencil
+
+Frame Definition Analysis:
+--------------------
+Original: this frame consists of words that indicate the change of an item's position on a scale.
+who: words
+verb: indicate
+object_on_which_the_action_is_made: change
+
+Component Matching Results:
+--------------------
+Substituted Definition: this frame consists of i that drop the pencil of an item's position on a scale.
+
+NLI Analysis:
+--------------------
+Premise: I drop the pencil.
+Hypothesis: This is an event where this frame consists of i that drop the pencil of an item's position on a scale.
+entailment: 0.0023
+neutral: 0.9968
+contradiction: 0.0009
+
+================================================================================
+
+================================================================================
+Analysis for ID: 8, Frame #3
+================================================================================
+
+Original Data:
+Sentence: I tear the backpack.
+Ground Truth: yes
+Frame: Damaging
+
+Sentence Analysis:
+--------------------
+who: I
+verb: tear
+object_on_which_the_action_is_made: backpack
+
+Frame Definition Analysis:
+--------------------
+Original: an agent affects a patient in such a way that the patient.
+who: agent
+verb: affects
+object_on_which_the_action_is_made: patient
+
+Component Matching Results:
+--------------------
+Substituted Definition: an i tear a backpack in such a way that the backpack.
+
+NLI Analysis:
+--------------------
+Premise: I tear the backpack.
+Hypothesis: This is an event where an i tear a backpack in such a way that the backpack.
+entailment: 0.9465
+neutral: 0.0530
+contradiction: 0.0005
+
+================================================================================
+

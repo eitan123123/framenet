@@ -1,0 +1,396 @@
+import spacy
+from nltk.corpus import framenet as fn
+from typing import Tuple, List, Dict, Optional
+import logging
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Load spaCy's language model
+nlp = spacy.load("en_core_web_sm")
+
+# Load environment variables from .env file
+load_dotenv()
+
+##verb_types = ["VBG","VBD","VB","VBN","VBP","VBZ"]
+def extract_verb_and_object(sentence: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extract verb (including phrasal verbs) and object from a sentence using spaCy,
+    with special handling for imperative sentences.
+    """
+    if not any(
+            sentence.lower().startswith(pronoun) for pronoun in ['i ', 'you ', 'he ', 'she ', 'it ', 'we ', 'they ']):
+        sentence = "You " + sentence
+
+    doc = nlp(sentence)
+    verb_phrase = None
+    obj = None
+
+    for token in doc:
+        if token.text.lower() == "you" and token.i == 0:
+            continue
+
+        if token.pos_ == "VERB" or (token.dep_ == "ROOT" and token.pos_ in ["VERB", "NOUN"]):
+            particles = []
+            for child in token.children:
+                if child.dep_ == "prt":
+                    particles.append(child.text)
+
+            verb_phrase = f"{token.text} {' '.join(particles)}" if particles else token.text
+            break
+
+    for token in doc:
+        if token.dep_ == "dobj":
+            obj = token.text
+            break
+        elif token.dep_ == "pobj" and not obj:
+            obj = token.text
+
+    return verb_phrase, obj
+
+
+def find_frames_for_verb(verb: str) -> List[str]:
+    """
+    Find frames in FrameNet associated with the given verb.
+    """
+    frames = set()
+    verb_search = verb.replace(" ", "_").lower()
+
+    for frame in fn.frames():
+        for lu in frame.lexUnit.keys():
+            lu_name = lu.lower()
+            if lu_name.startswith(verb_search) or (verb_search in lu_name and '.v' in lu_name):
+                frames.add(frame.name)
+                if len(frames) >= 4:
+                    break
+        if len(frames) >= 4:
+            break
+
+    if len(frames) < 4 and " " in verb:
+        base_verb = verb.split()[0].lower()
+        for frame in fn.frames():
+            if len(frames) >= 4:
+                break
+            for lu in frame.lexUnit.keys():
+                lu_name = lu.lower()
+                if lu_name.startswith(base_verb) and '.v' in lu_name:
+                    frames.add(frame.name)
+                    if len(frames) >= 4:
+                        break
+
+    return list(frames)[:4]
+
+
+def extract_frame_elements(frame_name: str) -> List[Dict]:
+    """
+    Extract Frame Elements (attributes) from a given frame with their descriptions.
+    """
+    frame = fn.frame(frame_name)
+    elements = []
+
+    for fe_name, fe in frame.FE.items():
+        element = {
+            'name': fe_name,
+            'definition': fe.definition,
+            'coretype': fe.coreType
+        }
+        elements.append(element)
+
+    return elements
+
+
+def analyze_preconditions(sentence: str, verb: str, obj: str, frame_name: str, elements: List[Dict]) -> Dict:
+    """
+    Ask GPT to analyze preconditions and required states for performing the action.
+    """
+    try:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("No OpenAI API key found in environment variables")
+
+        client = OpenAI(api_key=api_key)
+
+        prompt = f"""Given the action: "{sentence}"
+With verb: "{verb}" and object: "{obj}"
+Using frame: "{frame_name}"
+And frame elements: {[f"{e['name']}: {e['definition']}" for e in elements]}
+
+Analyze the necessary preconditions (attributes and their required states) needed to perform this action.
+First, determine if this frame is relevant for understanding the preconditions.
+Then, if relevant, list all physical and practical preconditions necessary for the action.
+
+Respond in this exact format (replace the example values):
+RELEVANT: [yes/no]
+PRECONDITIONS:
+- ATTRIBUTE: bottle_cap | STATE: removed
+- ATTRIBUTE: water_level | STATE: not empty
+
+Focus only on physical and practical preconditions necessary for the action to be possible."""
+
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system",
+                 "content": "You are an AI trained to analyze physical preconditions required for actions."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.3
+        )
+
+        # Parse the text response
+        response_text = response.choices[0].message.content
+        lines = response_text.strip().split('\n')
+
+        is_relevant = lines[0].lower().split(':')[1].strip() == 'yes'
+        preconditions = []
+
+        if is_relevant and len(lines) > 2:
+            for line in lines[2:]:  # Skip the "RELEVANT:" and "PRECONDITIONS:" lines
+                if line.startswith('-'):
+                    parts = line.replace('-', '').strip().split('|')
+                    if len(parts) == 2:
+                        attr = parts[0].split(':')[1].strip()
+                        state = parts[1].split(':')[1].strip()
+                        preconditions.append({
+                            "attribute": attr,
+                            "required_state": state
+                        })
+
+        return {
+            "is_relevant": is_relevant,
+            "preconditions": preconditions
+        }
+
+    except Exception as e:
+        logger.error(f"Error in GPT analysis: {str(e)}")
+        return {
+            "is_relevant": False,
+            "preconditions": [],
+            "error": str(e)
+        }
+
+
+def categorize_unique_preconditions(obj: str, unique_preconditions: List[Dict]) -> Dict:
+    try:
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError("No OpenAI API key found in environment variables")
+
+        client = OpenAI(api_key=api_key)
+
+        preconditions_list = "\n".join([
+            f"- {p['attribute']}: {p['required_state']}"
+            for p in unique_preconditions
+        ])
+
+        prompt = f"""Here are attributes and their states for a {obj}:
+{preconditions_list}
+
+First list attributes belonging to physical parts of the {obj}, grouping them by part.
+Then list any remaining attributes (like gravity, space, force) under "other_requirements".
+
+Format your response exactly like this:
+PHYSICAL_PARTS:
+- PART: cap
+  - cap_tightness: loose
+  - seal_integrity: broken
+
+- PART: body
+  - container_fullness: not empty
+  - material_integrity: intact
+
+OTHER_REQUIREMENTS:
+- gravity: present
+- space: available"""
+
+        response = client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system",
+                 "content": "You are an AI that organizes object attributes by their physical parts."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.3
+        )
+
+        result = {}
+        current_section = None
+        current_part = None
+
+        for line in response.choices[0].message.content.strip().split('\n'):
+            line = line.strip()
+            if line == "PHYSICAL_PARTS:":
+                current_section = "physical"
+            elif line == "OTHER_REQUIREMENTS:":
+                current_section = "other"
+                current_part = "other_requirements"
+                result[current_part] = []
+            elif line.startswith("- PART:") and current_section == "physical":
+                current_part = line.replace("- PART:", "").strip()
+                result[current_part] = []
+            elif line.startswith("-") and current_part is not None:
+                attr_state = line.replace("-", "").strip().split(":")
+                if len(attr_state) == 2:
+                    result[current_part].append({
+                        'attribute': attr_state[0].strip(),
+                        'required_state': attr_state[1].strip()
+                    })
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error in GPT categorization: {str(e)}")
+        return {}
+
+
+def print_and_save_results(results: Dict):
+    import datetime
+    import os
+
+    results_dir = 'results'
+    os.makedirs(results_dir, exist_ok=True)
+
+    timestamp = datetime.datetime.now().strftime('%d-%B-%Y_%H-%M-%S')
+    sentence = f"{results['verb']}_{results['object']}"
+    filename = f"{results_dir}/{sentence}_{timestamp}.txt"
+
+    # Print full results to console
+    print(f"\nAnalysis for action involving verb '{results['verb']}' and object '{results['object']}'")
+    print("\nRelevant frames and their preconditions:")
+    for frame in results['frame_analyses']:
+        print(f"\nFrame: {frame['frame_name']}")
+        for precond in frame['preconditions']:
+            print(f"  • {precond['attribute']}: {precond['required_state']}")
+
+    if results['unique_preconditions']:
+        categorized = categorize_unique_preconditions(results['object'], results['unique_preconditions'])
+        output = ["Preconditions organized by object parts:"]
+
+        # First add physical parts
+        for part, attributes in categorized.items():
+            if part != "other_requirements":
+                output.append(f"\n{part}:")
+                for attr in attributes:
+                    output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        # Then add other requirements if they exist
+        if "other_requirements" in categorized and categorized["other_requirements"]:
+            output.append("\nOther requirements:")
+            for attr in categorized["other_requirements"]:
+                output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        with open(filename, 'w') as f:
+            f.write('\n'.join(output))
+
+        print('\n'.join(output))
+
+
+def print_and_save_results(results: Dict):
+    import datetime
+    import os
+
+    results_dir = 'results'
+    os.makedirs(results_dir, exist_ok=True)
+
+    # Format timestamp for better readability
+    timestamp = datetime.datetime.now().strftime('%d-%B-%Y_%H-%M-%S')
+    sentence = f"{results['verb']}_{results['object']}"
+    filename = f"{results_dir}/{sentence}_{timestamp}.txt"
+
+    # Print full results to console
+    print(f"\nAnalysis for action involving verb '{results['verb']}' and object '{results['object']}'")
+    print("\nRelevant frames and their preconditions:")
+    for frame in results['frame_analyses']:
+        print(f"\nFrame: {frame['frame_name']}")
+        for precond in frame['preconditions']:
+            print(f"  • {precond['attribute']}: {precond['required_state']}")
+
+    # Prepare and save only the categorized preconditions
+    if results['unique_preconditions']:
+        categorized = categorize_unique_preconditions(results['object'], results['unique_preconditions'])
+        output = ["Preconditions organized by object parts:"]
+
+        for part, attributes in categorized.items():
+            output.append(f"\n{part}:")
+            for attr in attributes:
+                output.append(f"  • {attr['attribute']}: {attr['required_state']}")
+
+        with open(filename, 'w') as f:
+            f.write('\n'.join(output))
+
+        print('\n'.join(output))
+
+
+# Update the process_sentence function to pass the verb to categorize_unique_preconditions
+def process_sentence(sentence: str) -> Dict:
+    """
+    Process the sentence to find relevant frames and their required preconditions.
+    """
+    # Extract verb and object
+    verb, obj = extract_verb_and_object(sentence)
+    if not verb or not obj:
+        return {"error": "Could not extract verb or object."}
+
+    # Find relevant frames
+    frames = find_frames_for_verb(verb)
+    if not frames:
+        return {"error": f"No frames found for verb '{verb}'."}
+
+    # Analyze each frame
+    frame_analyses = []
+    all_preconditions = []
+
+    for frame_name in frames:
+        try:
+            elements = extract_frame_elements(frame_name)
+            analysis = analyze_preconditions(sentence, verb, obj, frame_name, elements)
+
+            if analysis['is_relevant']:
+                frame_analyses.append({
+                    'frame_name': frame_name,
+                    'preconditions': analysis['preconditions']
+                })
+                all_preconditions.extend(analysis['preconditions'])
+
+        except Exception as e:
+            logger.error(f"Error processing frame {frame_name}: {str(e)}")
+            continue
+
+    # Remove duplicate preconditions
+    unique_preconditions = []
+    seen = set()
+    for p in all_preconditions:
+        key = (p['attribute'], p['required_state'])
+        if key not in seen:
+            seen.add(key)
+            unique_preconditions.append(p)
+
+    return {
+        "verb": verb,
+        "object": obj,
+        "frame_analyses": frame_analyses,
+        "unique_preconditions": unique_preconditions
+    }
+
+
+
+
+
+if __name__ == "__main__":
+    # Example usage
+    test_sentences = [
+        "spill water from bottle",
+        "pour juice into glass",
+        "open the door"
+    ]
+
+    for sentence in test_sentences:
+        print(f"\nProcessing: '{sentence}'")
+        results = process_sentence(sentence)
+        print_and_save_results(results)
